@@ -1,3 +1,5 @@
+# test of midiutil library. creates a simple midi file.
+
 #Import the library
 from midiutil.MidiFile import MIDIFile
 
