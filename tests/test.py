@@ -28,6 +28,7 @@ for s in wb.sheets():
 			values.append(str(s.cell(row,col).value))
 			if values[-1] != '':
 				print 'font size for ', values[-1], ' is: ', font.height
+				#print font.dump()
 			sizes.append(str(font.height))
 
 		print ','.join(values)
