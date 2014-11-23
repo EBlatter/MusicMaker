@@ -1,9 +1,13 @@
-from parser import MusicParser
 import sys
+from parser import MusicParser
+from semantics import MusicSemantics
 
 def main():
 	parser = MusicParser()
-	parser.parse(sys.argv[1])
+	interpreter = MusicSemantics(sys.argv[1])
+	parsedNotes = parser.parse(sys.argv[1])
+	interpreter.createSong(parsedNotes)
+
 
 
 if __name__ == '__main__':

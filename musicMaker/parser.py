@@ -6,18 +6,18 @@ from xlrd import open_workbook
 class MusicParser:
 
 	def __init__(self):
-		self.pitch = pyparsing.Word(pyparsing.nums)
-		self.word = pyparsing.Word(pyparsing.alphanums)
-		self.volume = pyparsing.Word(pyparsing.nums)
+		self.pitch = pyparsing.Word(pyparsing.nums).setResultsName("pitch")
+		self.word = pyparsing.Word(pyparsing.alphanums).setResultsName("word")
+		self.volume = pyparsing.Word(pyparsing.nums).setResultsName("volume")
 
-		self.note = pyparsing.Group(self.pitch  + self.word  + self.volume)
-		self.song = pyparsing.OneOrMore(self.note)
+		self.note = pyparsing.Group(self.pitch  + self.word  + self.volume).setResultsName("note")
+		self.song = pyparsing.OneOrMore(self.note).setResultsName("song")
 
 
 	def extractFromExcel(self, filename):
 		'''extracts relevant info about fonts and strings from it
 			to pass to the actual parser'''
-		wb = open_workbook(filename, formatting_info = True)
+		wb = open_workbook(filename+'.xls', formatting_info = True)
 		xflist = wb.xf_list
 		fonts = wb.font_list
 		notes = ""
