@@ -1,4 +1,4 @@
-from musicMaker.parser import MusicParser
+from parser import MusicParser
 import sys
 
 def main():

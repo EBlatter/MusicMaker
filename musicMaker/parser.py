@@ -1,7 +1,4 @@
-import re, fileinput
-import pyPEG
 import pyparsing
-from pyparsing import *
 
 from mmap import mmap,ACCESS_READ
 from xlrd import open_workbook
@@ -33,13 +30,15 @@ class MusicParser:
 					#get information for font size
 					xfx = s.cell_xf_index(row, col)
 					font = fonts[xflist[xfx].font_index]
-					columnValues.append(str(s.cell(row,col).value))
 
 					if s.cell(row,col).value != '':
 						columnValues.append((str(s.cell(row,col).value), str(font.height))) 
 						notes = notes + (str(row) + ' ' + str(s.cell(row,col).value) + ' ' + str(font.height) + '\n')
-				# print columnValues
-				# print
+
+				#case where a column is left empty to designate a rest
+				#TODO: figure out how I want these represented
+				if columnValues == []:
+					notes = notes + ('0 None 0 \n')
 		return notes
 
 	def parse(self, filename):
