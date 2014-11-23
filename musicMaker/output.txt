@@ -1,0 +1,16 @@
+3 hello 180
+2 hello 400
+4 helloooooo 520
+7 nana 240
+8 nana 240
+9 nana 240
+8 nana 240
+7 nana 280
+8 nana 280
+9 nana 280
+8 nana 280
+7 nana 320
+8 nana 320
+9 nana 320
+8 nana 320
+2 baatmaaaaaan! 520
