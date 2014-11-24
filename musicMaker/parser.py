@@ -11,7 +11,7 @@ class MusicParser:
 		self.volume = pyparsing.Word(pyparsing.nums).setResultsName("volume")
 
 		self.note = pyparsing.Group(self.pitch  + self.word  + self.volume).setResultsName("note")
-		self.song = pyparsing.OneOrMore(self.note).setResultsName("song")
+		self.song = pyparsing.ZeroOrMore(self.note).setResultsName("song")
 
 
 	def extractFromExcel(self, filename):

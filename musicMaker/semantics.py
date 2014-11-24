@@ -17,7 +17,7 @@ class MusicSemantics:
 		self.file.addTempo(self.track,self.time,240)
 
 		#start pitch and volume that everything else will be relative to
-		self.pitch = 70
+		self.pitch = 75
 		self.maxVol = 0
 
 	
@@ -28,7 +28,6 @@ class MusicSemantics:
 		pitch = self.pitch - int(note.pitch)
 		duration = 1
 		volume = 100.0*(float(note.volume)/self.maxVol)
-		print 'volume', volume
 
 		# Now add the note.
 		self.file.addNote(track,channel,pitch,self.time,duration,volume)
