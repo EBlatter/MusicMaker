@@ -14,20 +14,21 @@ class MusicSemantics:
 
 		# Add track name and tempo.
 		self.file.addTrackName(self.track,self.time,trackName)
-		self.file.addTempo(self.track,self.time,120)
+		self.file.addTempo(self.track,self.time,240)
 
-		#start pitch that everything else will be relative to
+		#start pitch and volume that everything else will be relative to
 		self.pitch = 70
+		self.maxVol = 0
 
 	
 	def addNote(self, note):
-
 		# Add a note. addNote expects the following information:
 		track = 0
 		channel = 0
 		pitch = self.pitch - int(note.pitch)
 		duration = 1
-		volume = 100
+		volume = 100.0*(float(note.volume)/self.maxVol)
+		print 'volume', volume
 
 		# Now add the note.
 		self.file.addNote(track,channel,pitch,self.time,duration,volume)
@@ -35,7 +36,14 @@ class MusicSemantics:
 		self.time += duration
 
 
+	def findMaxVolume(self, notes):
+		for note in notes:
+			if float(note.volume) > self.maxVol:
+				self.maxVol = float(note.volume)
+		print self.maxVol
+
 	def createSong(self, notes):
+		self.findMaxVolume(notes)
 		for note in notes:
 			self.addNote(note)
 
