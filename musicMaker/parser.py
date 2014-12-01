@@ -39,6 +39,7 @@ class MusicParser:
 				#TODO: figure out how I want these represented
 				if columnValues == []:
 					notes = notes + ('0 None 0 \n')
+		# print 'notes', notes
 		return notes
 
 	def parse(self, filename):

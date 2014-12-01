@@ -39,7 +39,6 @@ class MusicSemantics:
 		for note in notes:
 			if float(note.volume) > self.maxVol:
 				self.maxVol = float(note.volume)
-		print self.maxVol
 
 	def createSong(self, notes):
 		self.findMaxVolume(notes)
