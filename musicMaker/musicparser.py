@@ -1,18 +1,8 @@
-import pyparsing
-
+from ast import *
 from mmap import mmap,ACCESS_READ
 from xlrd import open_workbook
 
 class MusicParser:
-
-	def __init__(self):
-		self.pitch = pyparsing.Word(pyparsing.nums).setResultsName("pitch")
-		self.word = pyparsing.Word(pyparsing.alphanums).setResultsName("word")
-		self.volume = pyparsing.Word(pyparsing.nums).setResultsName("volume")
-
-		self.note = pyparsing.Group(self.pitch  + self.word  + self.volume).setResultsName("note")
-		self.song = pyparsing.ZeroOrMore(self.note).setResultsName("song")
-
 
 	def extractFromExcel(self, filename):
 		'''extracts relevant info about fonts and strings from it
@@ -46,6 +36,6 @@ class MusicParser:
 		'''takes in a .xls file, finds the notes in it and parses relevant information
 			and puts it in a nice list'''
 		notes = self.extractFromExcel(filename)
-		parsedNotes = self.song.parseString(notes)
-		print 'parsed:', parsedNotes
-		return parsedNotes
+		song = parse(notes, Song)
+		print 'parsed:', song
+		return song

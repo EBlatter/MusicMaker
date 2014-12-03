@@ -25,9 +25,9 @@ class MusicSemantics:
 		# Add a note. addNote expects the following information:
 		track = 0
 		channel = 0
-		pitch = self.pitch - int(note.pitch)
+		pitch = self.pitch - note.pitch
 		duration = 1
-		volume = 100.0*(float(note.volume)/self.maxVol)
+		volume = 100.0*(note.volume/self.maxVol)
 
 		# Now add the note.
 		self.file.addNote(track,channel,pitch,self.time,duration,volume)
