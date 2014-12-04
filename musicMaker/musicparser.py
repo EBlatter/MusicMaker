@@ -23,19 +23,23 @@ class MusicParser:
 
 					if s.cell(row,col).value != '':
 						columnValues.append((str(s.cell(row,col).value), str(font.height))) 
-						notes = notes + (str(row) + ' ' + str(s.cell(row,col).value) + ' ' + str(font.height) + '\n')
+						notes = notes + (' ' + str(row) + ' ' + str(s.cell(row,col).value) + ' ' + str(font.height))
 
 				#case where a column is left empty to designate a rest
 				#TODO: figure out how I want these represented
 				if columnValues == []:
-					notes = notes + ('0 None 0 \n')
-		# print 'notes', notes
+					notes = notes + (' 0 - 0')
+		notes = notes.lstrip()
 		return notes
 
 	def parse(self, filename):
 		'''takes in a .xls file, finds the notes in it and parses relevant information
 			and puts it in a nice list'''
 		notes = self.extractFromExcel(filename)
+
 		song = parse(notes, Song)
-		print 'parsed:', song
+		for note in song:
+			print 'note'
+			print note
+			print
 		return song
