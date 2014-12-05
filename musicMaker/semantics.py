@@ -20,20 +20,32 @@ class MusicSemantics:
 		self.pitch = 75
 		self.maxVol = 0
 
+		self.vowels = ['a','e','i','o','u','y']
+
 	
 	def addNote(self, note):
 		# Add a note. addNote expects the following information:
-		track = 0
-		channel = 0
-		pitch = self.pitch - note.pitch
-		duration = 1
-		volume = 100.0*(note.volume/self.maxVol)
+		for subnote in note.subnotes:
+			print subnote
+			print self.findMaxVowels(subnote)
+			track = 0
+			channel = 0
+			pitch = self.pitch - note.pitch
+			duration = 1 * self.findMaxVowels(subnote)
+			volume = 100.0*(note.volume/self.maxVol)
 
-		# Now add the note.
-		self.file.addNote(track,channel,pitch,self.time,duration,volume)
+			# Now add the note.
+			self.file.addNote(track,channel,pitch,self.time,duration,volume)
 
-		self.time += duration
+			self.time += duration
 
+	def findMaxVowels(self, subnote):
+		maxLength = 0
+		for vowel in self.vowels:
+			count = subnote.count(vowel)
+			if maxLength < count:
+				maxLength = count
+		return maxLength
 
 	def findMaxVolume(self, notes):
 		for note in notes:

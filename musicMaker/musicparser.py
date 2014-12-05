@@ -23,7 +23,9 @@ class MusicParser:
 
 					if s.cell(row,col).value != '':
 						columnValues.append((str(s.cell(row,col).value), str(font.height))) 
-						notes = notes + (' ' + str(row) + ' ' + str(s.cell(row,col).value) + ' ' + str(font.height))
+						# currently stripping off the last letter of the word to avoid current problems with silent e's at the end
+						# TODO: deal with this better
+						notes = notes + (' ' + str(row) + ' ' + str(s.cell(row,col).value)[:-1] + ' ' + str(font.height))
 
 				#case where a column is left empty to designate a rest
 				#TODO: figure out how I want these represented
@@ -40,6 +42,6 @@ class MusicParser:
 		song = parse(notes, Song)
 		for note in song:
 			print 'note'
-			print note
+			print note.subnotes
 			print
 		return song
