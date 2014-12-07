@@ -11,11 +11,11 @@ class Pitch(int):
 class Volume(float):
 	grammar = number
 
-class Word(List):
+class Vowels(List):
 	grammar = contiguous(maybe_some([vowel, omit(consonant)]))
 
 class Note(str):
-	grammar = attr("pitch", Pitch), attr("subnotes", Word), attr("volume", Volume)
+	grammar = attr("pitch", Pitch), attr("vowels", Vowels), attr("volume", Volume)
 
 class Song(List):
 	grammar = maybe_some(Note)

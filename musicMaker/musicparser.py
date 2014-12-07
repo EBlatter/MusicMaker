@@ -3,6 +3,8 @@ from mmap import mmap,ACCESS_READ
 from xlrd import open_workbook
 
 class MusicParser:
+	# def __init__(self):
+	# 	self.consonants = ['c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z']
 
 	def extractFromExcel(self, filename):
 		'''extracts relevant info about fonts and strings from it
@@ -23,15 +25,20 @@ class MusicParser:
 
 					if s.cell(row,col).value != '':
 						columnValues.append((str(s.cell(row,col).value), str(font.height))) 
-						# currently stripping off the last letter of the word to avoid current problems with silent e's at the end
-						# TODO: deal with this better
-						notes = notes + (' ' + str(row) + ' ' + str(s.cell(row,col).value)[:-1] + ' ' + str(font.height))
+						word = str(s.cell(row,col).value).lower()
+
+						# # gets rid of most silent Es at the end of words so vowel-counting
+						# # is more accurate in semantics
+						# if word[-1] == 'e' and word[-2] in self.consonants:
+						# 	word = word[:-1]
+						# print word
+
+						notes = notes + (str(row) + ' ' + word + ' ' + str(font.height)+'\n')
 
 				#case where a column is left empty to designate a rest
-				#TODO: figure out how I want these represented
 				if columnValues == []:
-					notes = notes + (' 0 - 0')
-		notes = notes.lstrip()
+					notes = notes + ('0 - 0\n')
+		print notes
 		return notes
 
 	def parse(self, filename):
@@ -42,6 +49,6 @@ class MusicParser:
 		song = parse(notes, Song)
 		for note in song:
 			print 'note'
-			print note.subnotes
+			print note.vowels
 			print
 		return song
