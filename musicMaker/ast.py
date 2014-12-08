@@ -1,8 +1,8 @@
 from pypeg2 import *
 
 number = re.compile("\d+")
-vowel = re.compile("[aeiouy]+")
-consonant = re.compile("[^aeiouy\s]+")
+vowel = re.compile("[aeiouy\-]+")
+consonant = re.compile("[^aeiouy\-\s]+")
 notWhitespace = re.compile("[^\s]+")
 
 class Pitch(int):

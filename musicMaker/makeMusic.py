@@ -1,6 +1,6 @@
 import sys
 from musicparser import *
-from semantics2 import MusicSemantics
+from semantics import MusicSemantics
 
 def main():
 	parser = MusicParser()

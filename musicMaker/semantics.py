@@ -1,6 +1,19 @@
 #Import the library
 from midiutil.MidiFile import MIDIFile
 
+class PitchValueError(Exception):
+     def __init__(self, value):
+         self.value = value
+     def __str__(self):
+         return repr(self.value)
+
+class NoteDurationError(Exception):
+	 def __init__(self, value):
+	     self.value = value
+	 def __str__(self):
+	     return repr(self.value)
+
+
 class MusicSemantics:
 
 	def __init__(self, trackName = 'MusicMakerSong'):
@@ -17,29 +30,47 @@ class MusicSemantics:
 		self.file.addTempo(self.track,self.time,240)
 
 		#start pitch and volume that everything else will be relative to
-		self.pitch = 75
+		self.pitch = 71
 		self.maxVol = 0
 
 		self.vowels = ['a','e','i','o','u','y']
 
-	
 	def addNote(self, note):
+		duration = self.findMaxVowelsNote(note.vowels)
+		if duration == 0:
+			if note.vowels == []:
+				raise NoteDurationError("Song has a note with no vowels, so duration cannot be determined. Please add vowels.")
+
+		# error handling for note pitch limits
+		if note.pitch >= self.pitch+1:
+			raise PitchValueError("Pitch in row " + str(note.pitch + 1) + " is too low. Try moving it to row " + str(self.pitch) + " or higher.")
+		
 		# Add a note. addNote expects the following information:
-		for subnote in note.subnotes:
-			print subnote
-			print self.findMaxVowels(subnote)
-			track = 0
-			channel = 0
-			pitch = self.pitch - note.pitch
-			duration = 1 * self.findMaxVowels(subnote)
-			volume = 100.0*(note.volume/self.maxVol)
+		track = 0
+		channel = 0
+		pitch = self.pitch - note.pitch
+		volume = 100.0*(note.volume/self.maxVol)
 
-			# Now add the note.
-			self.file.addNote(track,channel,pitch,self.time,duration,volume)
+		# notes are inaudible in some programs if they're less than 25.
+		if volume < 25.0:
+			volume = 25.0
 
-			self.time += duration
+		# Now add the note.
+		self.file.addNote(track,channel,pitch,self.time,duration,volume)
 
-	def findMaxVowels(self, subnote):
+		self.time += duration
+
+	def findMaxVowelsNote(self, vowelList):
+		'''finds the longest string of vowels in a note'''
+		maxVowels = 0
+		for subnote in vowelList:
+			maxSubnoteVowels = self.findMaxVowelsSubnote(subnote)
+			if maxSubnoteVowels > maxVowels:
+				maxVowels = maxSubnoteVowels
+		return maxVowels
+
+	def findMaxVowelsSubnote(self, subnote):
+		'''finds the longest string of vowels in a subnote (collection of vowels within a note'''
 		maxLength = 0
 		for vowel in self.vowels:
 			count = subnote.count(vowel)
@@ -53,6 +84,7 @@ class MusicSemantics:
 				self.maxVol = float(note.volume)
 
 	def createSong(self, notes):
+		'''takes in parsed notes, creates MIDI file for those notes'''
 		self.findMaxVolume(notes)
 		for note in notes:
 			self.addNote(note)

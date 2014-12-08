@@ -1,10 +1,9 @@
 from ast import *
 from mmap import mmap,ACCESS_READ
 from xlrd import open_workbook
+import warnings
 
 class MusicParser:
-	# def __init__(self):
-	# 	self.consonants = ['c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z']
 
 	def extractFromExcel(self, filename):
 		'''extracts relevant info about fonts and strings from it
@@ -24,31 +23,23 @@ class MusicParser:
 					font = fonts[xflist[xfx].font_index]
 
 					if s.cell(row,col).value != '':
-						columnValues.append((str(s.cell(row,col).value), str(font.height))) 
 						word = str(s.cell(row,col).value).lower()
-
-						# # gets rid of most silent Es at the end of words so vowel-counting
-						# # is more accurate in semantics
-						# if word[-1] == 'e' and word[-2] in self.consonants:
-						# 	word = word[:-1]
-						# print word
+						columnValues.append((word, str(font.height))) 
+						
+						if len(columnValues) > 1:
+							warnings.warn("Column " + str(col + 1) + " has more than one note in it. The notes will be played sequentially, not at the same time.")
 
 						notes = notes + (str(row) + ' ' + word + ' ' + str(font.height)+'\n')
 
 				#case where a column is left empty to designate a rest
 				if columnValues == []:
 					notes = notes + ('0 - 0\n')
-		print notes
+		# print notes
 		return notes
 
 	def parse(self, filename):
 		'''takes in a .xls file, finds the notes in it and parses relevant information
 			and puts it in a nice list'''
 		notes = self.extractFromExcel(filename)
-
 		song = parse(notes, Song)
-		for note in song:
-			print 'note'
-			print note.vowels
-			print
 		return song
