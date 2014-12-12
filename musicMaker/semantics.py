@@ -52,7 +52,8 @@ class MusicSemantics:
 		volume = 100.0*(note.volume/self.maxVol)
 
 		# notes are inaudible in some programs if they're less than 25.
-		if volume < 25.0:
+		# but if the note is -, it's a pause and can stay at volume 0
+		if volume < 25.0 and note.vowels != ['-']:
 			volume = 25.0
 
 		# Now add the note.
@@ -72,6 +73,8 @@ class MusicSemantics:
 	def findMaxVowelsSubnote(self, subnote):
 		'''finds the longest string of vowels in a subnote (collection of vowels within a note'''
 		maxLength = 0
+		if subnote == '-':
+			return 1
 		for vowel in self.vowels:
 			count = subnote.count(vowel)
 			if maxLength < count:
