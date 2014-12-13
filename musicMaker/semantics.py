@@ -1,5 +1,6 @@
 #Import the library
 from midiutil.MidiFile import MIDIFile
+import math
 
 class PitchValueError(Exception):
      def __init__(self, value):
@@ -50,6 +51,8 @@ class MusicSemantics:
 		channel = 0
 		pitch = self.pitch - note.pitch
 		volume = 100.0*(note.volume/self.maxVol)
+		duration = math.ceil((1.0*duration) / 2.0)
+		print duration
 
 		# notes are inaudible in some programs if they're less than 25.
 		# but if the note is -, it's a pause and can stay at volume 0

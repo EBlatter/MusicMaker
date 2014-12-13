@@ -1,0 +1,69 @@
+#Final write-up
+
+<!--Your writeup should be clear, cohesive, and well-written. A list of bullets that addresses the following questions is not sufficient.
+Your write-up should describe your domain, your language, and your design and implementation processes. Specifically, it should have the following format:-->
+
+<!--Your project description can serve as a good first draft of the introduction.-->
+##Introduction
+
+The goal of my language is that a program written in it will sound the way it looks, which will not only make it easier to write music, especially for those who can't read typical music notation, and would also be a fun way to make music. In one sentence, my DSL will take in text that is formatted by the user and output music based on characteristics of the text. This language is good for the domain of music because it notates music in a way that takes advantage of the user's intuition about music; in general, longer notes are longer, higher notes are higher, and bigger notes are louder.
+
+##Language Design Details
+<!--Your language design overview can serve as a good first draft of the language design details section.-->
+
+A user would write programs in my language by creating an Excel spreadsheet (specifically, a .xls file) with the text they want in it. Because of this, Excel can be used as a development environment for the user, which is nice because it's easy to use and most people have enough experience with it to be able to easily write a program wtih my language. I have also created an Excel template that can make it a bit easier for users. Each row is colored and rows of the same color are the same note but in different octaves. It also only colors the rows for pitches that are allowed in the program. Once they have finished writing their program in Excel, they run makeMusic.py on it, which essentially compiles it into a MIDI file.
+
+The syntax and data structures themselves are rather simple. Whatever text is in each column represents a note, which is the basic data structure of my program. The user can control three attributes of a note - location within the column, text size, and number of consecutive vowels. The location within the column determines pitch - notes in high rows will have higher pitches than those in lower rows. The volume of the note is determined by the size of the text - bigger text is louder. The duration of the note is determined by the number of consecutive vowels. For example, a cell that has "yeees" will last 3 times as long as a cell that has "yes" in it. This language does not have any control structures, and the song is always played from left to right.
+
+There are some aspects of music that I decided to not give the user control over. The most noticeable one is tempo. This is becausethere didn't seem to be an intuitive, visual way to show how fast a song was supposed to go. I couldn't figure out how to work it into the Excel spreadsheets. However, the default tempo I've set seems to be acceptable for many songs, and if a user really wants it at a different tempo, there are programs they can use to play it faster or slower.
+
+Because the syntax is very simple and intuitive, there are few ways that a program could go wrong. If the Excel spreadsheet that the user directed to does not exist, an error is thrown. If a note has no vowels in it, then there is no way to determine how long it should be. When this happens, an error is thrown. An error is also thrown if there is a note that is too low for the MIDI library I am using to write. Also, if a user puts multiple notes in the same column, an error will be thrown.
+
+The easiest to understand example is batman.xls, which is in the MusicMaker/sampleprograms directory. Most people are familiar with the Batman theme, and so if they follow along with the position of the notes, they can see that it seems to map to what they would expect of the pitches. The program also gets louder as the song goes on, which can be seen from the text getting bigger from left to right. Also, the last two notes are held out longer than the previous notes, which is why they are 'baat' and 'maaaaaan' rather than 'bat' and 'man'. When this program runs, the output is a MIDI file (called batman.mid), which is placed in the same MusicMaker/sampleprograms directory and should sound like teh Batman theme song.
+
+A user reading through the program in batman.xls should be able to have some understanding of what the song sounds like. This is because the syntax is a more intuitive and visual way to create music. The goal is that a program written in this language will sound the way it looks, which will not only make it easier to write music, especially for those who can't read typical music notation, and would also be a fun way to make music.
+
+There are a lot of DSLs for describing music. For example, there are a lot of languages, libraries, and tools [here](https://wiki.python.org/moin/PythonInMusic) for creating music with Python. The notation used to create sheet music can also be considered a DSL. There are also [many different types of musical notation] (http://en.wikipedia.org/wiki/Musical_notation). However, these languages tend to focus more on users who are experts in the domain of music, while my goal with my DSL is to simplify the creating music process a bit to make it more accessible to people who can't read music or program. Though it may not be quite as simplified as something like the Melodica app, which is also a DSL for music, the user can use plain English to write their notes, which is nice for users who tend to think of music in terms of song lyrics they can sing along with.
+
+
+
+<!--Your language implementation overview can serve as a good first draft of language implementation section.-->
+##Language Implementation
+
+I chose Python as my host language. I found several tools in Python that seemed like they would make my implementation process simpler. Sisi, my critique partner, told me about pyPEG, which is a parsing library in Python, which is very easy to use. I've also found libraries for parsing Excel files and creating MIDI files in Python. In addition to the availability of easy-to-use and helpful tools, I'm fairly comfortable with using Python, so it seemed like it was a suitable choice. However, any language that has adequate support libraries for Excel files, parsing, and creating music output would have worked as a host language for my DSL.
+
+I chose to implement my language as an external language. My language didn't really make sense to me as an internal language. Making it external gave me more freedom in my syntax, which helped me keep it simple for the users. Most importantly, it let me use Excel as a development environment for users, which makes for a very visual and simple user experience.
+
+Because there is a lot of information in an Excel spreadsheet and much of it is unnecessary for my language, I start by running the Excel file through a function that extracts the information I need. It uses the xlrd library to get the row that each note is in, what text is in the cell, and what size the font is. I put this information into a string in that order for each note. I then use pyPEG to put it into a Song object, which can be seen in ast.py. Each song object has zero or more Notes, which each have a pitch attribute, which is just the row the note is in, and a volume attribute, which is just the font size of the word in the cell, that are pulled directly from the information extracted from Excel. Each note also has a Vowels attribute, which is just each group of vowels that are in the text from the cell. From these attributes, pitch, volume, and duration can be determined for each note in semantics.
+
+Once the program is parsed into the AST, it can be passed to semantics.py. This loops through each note of the Song object and adds it to a MIDI file. I'm using the MIDIUtil library to do this. It has a function called addNote that takes in the track, channel, pitch, time, duration, and volume of a note to add to the file, and for my purposes, each of those arguments is either constant for all notes (track, channel) or can easily be calculated from Note attributes (pitch, time, duration, volume).
+
+To calculate the pitch, the program starts with a base pitch that is a constant in semantics.py. This is the highest note that is allowed by the language. Because lower notes will have a higher row number stored as their pitch attribute and smaller numbers represent lower pitches in the MIDIUtil library, pitch for a note is simply calculated by subtracting its row number from the base pitch.
+
+Volume is determined by first finding the largest font size in the program. This is then used to normalize the volume each note. For example, notes that are the largest will be played at 100% volume, but notes that are half that size will be half as loud.
+
+The duration of a note is determined by the longest string of consecutive vowels in a word. However, I foudn that people tended to overestimate how many vowels to add, so I divide the number of consecutive vowels by two and round up to get the duration. This also helps solve the problem of words like "book" where two vowels in a row doesn't mean it's a longer note. An example of how this would work is if the note has the word "frieeeend" in it, then the only group of vowels that would have been passed to semantics from that would have been "ieeee". That string has four e's in a row, so the note duration would be two beats.
+
+
+
+
+<!--Your preliminary evaluation can serve as a good first draft of the evaluation section-->
+##Evaluation
+
+My language is *very* DSL-y. I don't really see how it can be used for any sort of general-purpose programming. The output is always a MIDI file, and so it's hard to do anything outside the domain of music with that.
+
+In my language, changing the volume of a note works very well. It works as you would expect, and is easy for the user to tweak and change.
+
+I'm also happy with how the duration of notes works. I used a simple heuristic on the max number of consecutive vowels in the text, which seems to be working rather well. However, it's not perfect. Something that might be better is some sort of natural language processing on it to figure out how notes have been elongated, but I did not have the NLP experience nor the time to actually pursue that path.
+
+Changing the pitch of a note both works well and doesn't. Much of this stems from the fact that writing and understanding music is a difficult task. Placing the notes has been described as being similar to randomly striking piano keys until you find the sound you want. However, once the correct notes have been found, the program looks very cool, and it's interesting to then see it produce matching output. However, creating the output takes time and a lot of trial and error.
+
+One thing I could do to make this program-writing process easier is to shorten the time between compiling the program and listening to it, so doing a lot of trial and error would go faster. Currently, when you run a program through makeMusic.py, it will open it automatically in whatever player the user has to listen to MIDI files. However, this might still be too slow for a user who wants to do a lot of trial and error to find the correct pitches. Ideally, I'd have a user interface where the user could construct their program in it and then simply press a play button to hear it, but that was not something I had time for this semester. In this user interface, there might also be some sort of simple slider to change the speed of the song so that the user could have some control over that too.
+
+Most of what I've learned about what works well and doesn't work well is from critiques and user tests. Talking to my critique group helped me to think about a lot of different ideas for how to implement the duration of notes. Doing tests with users made me see that it can be very difficult to place the notes in the right places. Sisi, who did critiques for me this semester, suggested that I create a colorful template that can make it easier for users to visualize how far apart certain notes are, I've implemented this but have not yet had a chance to test with users.
+
+Through my tests, I've had some conflicting input about what to do in the case of two notes in the same column. Everyone agreed that the notes should be played as a chord. However, I have had trouble figuring out how to implement that. It would require some restructuring of how notes are represented because notes would now have to either know what column they came from or keep track of all the pitches within their column, and this also creates a lot of new places where errors can occur. I have not thought of a way to neatly integrate this with the other features I already have. In the meantime, I need to either throw an error or a warning or do nothing when this happens, and this is where users disagreed. While some thought that this was a minor problem and that only a warning was necessary, others seemed to find it to be a more major error. I started out implementing it as a warning, but when I tested on users after that, they seemed to be surprised by that behavior, so I have worked to implement it as an error instead, though I do hope to make it so multiple notes can be played at the same time by next week.
+
+I had some trouble in the beginning with finding useful libraries for what I needed to do and figuring out how they worked. Many had poor documentation and I had trouble even figuring out how to install them. However, taking the time to find good libraries in my host language to implement with seems to have helped make the actual implementation easier. 
+
+Despite the various hiccups and difficulties, I feel that my final language is very similar to what I originally had in mind for it. It works well, and I'm happy with the results.
