@@ -52,7 +52,6 @@ class MusicSemantics:
 		pitch = self.pitch - note.pitch
 		volume = 100.0*(note.volume/self.maxVol)
 		duration = math.ceil((1.0*duration) / 2.0)
-		print duration
 
 		# notes are inaudible in some programs if they're less than 25.
 		# but if the note is -, it's a pause and can stay at volume 0
@@ -95,7 +94,7 @@ class MusicSemantics:
 		for note in notes:
 			self.addNote(note)
 
-		# And write it to disk.
+		# writes the midi file
 		binfile = open(self.trackName+'.mid', 'wb')
 		self.file.writeFile(binfile)
 

@@ -3,6 +3,12 @@ from mmap import mmap,ACCESS_READ
 from xlrd import open_workbook
 import warnings
 
+class TooManyNotesError(Exception):
+     def __init__(self, value):
+         self.value = value
+     def __str__(self):
+         return repr(self.value)
+
 class MusicParser:
 
 	def extractFromExcel(self, filename):
@@ -27,7 +33,7 @@ class MusicParser:
 						columnValues.append((word, str(font.height))) 
 						
 						if len(columnValues) > 1:
-							warnings.warn("Column " + str(col + 1) + " has more than one note in it. The notes will be played sequentially, not at the same time.")
+							raise TooManyNotesError("Column " + str(col + 1) + " has more than one note in it. Please limit your program to one note per column.")
 
 						notes = notes + (str(row) + ' ' + word + ' ' + str(font.height)+'\n')
 
